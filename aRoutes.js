@@ -5,6 +5,10 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import authenticateToken from "./authMiddleware.js";
 import { registerSchema, loginSchema } from "./aSchemas.js";
+import dotenv from "dotenv";
+
+// env laod
+dotenv.config();
 
 export default function createRouter(db) {
   const router = express.Router();

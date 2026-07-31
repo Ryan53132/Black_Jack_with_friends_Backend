@@ -1,5 +1,9 @@
 // authMiddleware.js
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+// env laod
+dotenv.config();
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];

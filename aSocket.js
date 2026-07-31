@@ -1,6 +1,10 @@
 // socket/blackjack.js
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+// env laod
+dotenv.config();
 
 // 5 Minutos de Delay
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
