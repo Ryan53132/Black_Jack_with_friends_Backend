@@ -185,7 +185,11 @@ export default function createRouter(db) {
   });
 
   return res.json({ message: "Deslogado com sucesso!" });
-});
+  });
+
+  router.get('/ping', (req, res) => {
+    res.send('pong');
+  });
 
   return router;
 }
