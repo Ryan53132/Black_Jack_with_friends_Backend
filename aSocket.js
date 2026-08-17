@@ -27,7 +27,39 @@ function removerJogadorDaSala(socketId, salaId, io) {
   io.to(salaId).emit("atualizar_estado", sala);
 }
 
-// Auxiliar para criar e embaralhar 2 baralhos (104 cartas)
+// Simula o corte imperfeito do maço pelo croupier
+function dividirBaralho(baralho) {
+  // Ponto de corte próximo da metade com variação natural (+- 5 cartas)
+  const meio = Math.floor(baralho.length / 2);
+  const variacao = Math.floor(Math.random() * 11) - 5;
+  const pontoCorte = Math.max(1, Math.min(baralho.length - 1, meio + variacao));
+
+  const esquerda = baralho.slice(0, pontoCorte);
+  const direita = baralho.slice(pontoCorte);
+  return [esquerda, direita];
+}
+
+// Simula a intercalação física das cartas (Riffle Shuffle / Modelo de Cassino)
+function intercalarRiffle(esquerda, direita) {
+  const resultado = [];
+
+  while (esquerda.length > 0 || direita.length > 0) {
+    // A probabilidade de soltar carta do monte é proporcional à quantidade restante
+    const probEsquerda = esquerda.length / (esquerda.length + direita.length);
+
+    // O croupier solta de 1 a 3 cartas de um monte por vez
+    const monteEscolhido = Math.random() < probEsquerda ? esquerda : direita;
+    const quantidade = Math.min(monteEscolhido.length, Math.floor(Math.random() * 3) + 1);
+
+    for (let k = 0; k < quantidade; k++) {
+      resultado.push(monteEscolhido.shift());
+    }
+  }
+
+  return resultado;
+}
+
+// Auxiliar para criar e embaralhar 2 baralhos (104 cartas) simulando um croupier real
 function criarDoisBaralhos() {
   const naipes = ["♠", "♥", "♦", "♣"];
   const valores = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
@@ -45,9 +77,10 @@ function criarDoisBaralhos() {
     }
   }
 
-  for (let i = baralho.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [baralho[i], baralho[j]] = [baralho[j], baralho[i]];
+  // 🎴 Simulação de Croupier Real (7 passagens consecutivas de Riffle Shuffle + Corte)
+  for (let passagem = 0; passagem < 7; passagem++) {
+    const [esquerda, direita] = dividirBaralho(baralho);
+    baralho = intercalarRiffle(esquerda, direita);
   }
 
   return baralho;
